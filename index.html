@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#167347">
+<title>Aniversariantes – Feliz Aniversário</title>
+<style>
+:root{--green:#167347;--dark:#105637;--pale:#eaf6ef;--white:#fff;--text:#183328;--muted:#678074}
+*{box-sizing:border-box}body{margin:0;background:#f3f8f5;color:var(--text);font-family:Arial,sans-serif}
+header{background:linear-gradient(135deg,var(--green),#22965e);color:white;padding:25px 18px 30px;border-radius:0 0 24px 24px}
+header h1{margin:0 0 6px;font-size:25px}header p{margin:0;opacity:.93}
+main{max-width:720px;margin:auto;padding:16px}
+.card{background:white;border-radius:17px;padding:17px;margin:0 0 15px;box-shadow:0 4px 16px #163b2410}
+h2{font-size:18px;margin:0 0 14px;color:var(--dark)}
+label{display:block;font-size:13px;font-weight:bold;margin:11px 0 5px;color:#355b47}
+input{width:100%;padding:12px;border:1px solid #cbded1;border-radius:10px;font-size:16px;background:#fbfefc}
+button{border:0;border-radius:11px;padding:12px 15px;font-size:15px;font-weight:bold;cursor:pointer}
+.primary{background:var(--green);color:white;width:100%;margin-top:15px}
+.secondary{background:var(--pale);color:var(--dark)}
+.danger{background:#fff0f0;color:#a22}
+.row{display:flex;gap:9px;align-items:center;flex-wrap:wrap}
+.person{border:1px solid #e1eee5;border-radius:13px;padding:13px;margin:10px 0}
+.person strong{font-size:16px}.sub{font-size:13px;color:var(--muted);margin-top:4px}
+.actions{display:flex;gap:8px;margin-top:10px;flex-wrap:wrap}
+.actions button{font-size:13px;padding:9px 11px}
+.badge{display:inline-block;background:var(--pale);color:var(--dark);padding:5px 8px;border-radius:20px;font-size:12px;font-weight:bold}
+.empty{color:var(--muted);font-size:14px;text-align:center;padding:18px}
+#notice{display:none;background:#fff8df;border:1px solid #f1dfa0;padding:12px;border-radius:12px;margin-bottom:14px}
+footer{text-align:center;color:var(--muted);font-size:12px;padding:8px 15px 25px}
+</style>
+</head>
+<body>
+<header>
+  <h1>🎂 Aniversariantes</h1>
+  <p>Feliz Aniversário — lembre-se de celebrar cada vida!</p>
+</header>
+<main>
+  <div id="notice"></div>
+  <section class="card">
+    <h2>➕ Cadastrar pessoa</h2>
+    <form id="birthdayForm">
+      <label for="name">Nome</label>
+      <input id="name" required maxlength="70" placeholder="Nome da pessoa">
+      <label for="birth">Data de nascimento</label>
+      <input id="birth" type="date" required>
+      <label for="phone">WhatsApp com DDD (opcional)</label>
+      <input id="phone" type="tel" placeholder="Ex.: 5592999999999">
+      <div class="row">
+        <button class="primary" id="saveBtn" type="submit" style="flex:1">Salvar aniversariante</button>
+        <button class="secondary" id="cancelEdit" type="button" style="display:none;margin-top:15px">Cancelar edição</button>
+      </div>
+      <p id="editHint" style="display:none;color:#167347;font-size:13px;margin:10px 0 0">Editando cadastro: altere o dia, mês ou ano e salve.</p>
+    </form>
+  </section>
+
+  <section class="card">
+    <h2>📅 Próximos aniversários</h2>
+    <div class="row">
+      <input id="search" aria-label="Buscar pessoa" placeholder="Buscar pelo nome..." style="flex:1;min-width:180px">
+      <button class="secondary" id="notifyBtn" type="button">Ativar avisos</button>
+    </div>
+    <div id="people"></div>
+  </section>
+  <section class="card">
+    <h2>💚 Como funciona</h2>
+    <p style="font-size:14px;line-height:1.5;margin:0">Cadastre o nome e a data de nascimento. Ao abrir o aplicativo no dia do aniversário, você verá um lembrete e poderá tocar em <b>Enviar pelo WhatsApp</b>. O texto será preparado para você revisar e enviar.</p>
+  </section>
+</main>
+<footer>Seus cadastros ficam salvos neste aparelho e neste navegador.</footer>
+<script>
+const KEY='aniversariantes_v1';
+const $=id=>document.getElementById(id);
+let people=JSON.parse(localStorage.getItem(KEY)||'[]');
+const today=new Date();
+const dayKey=d=>${d.getMonth()+1}-${d.getDate()};
+function parseD
