@@ -2,76 +2,97 @@
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="theme-color" content="#167347">
-<title>Aniversariantes – Feliz Aniversário</title>
+<title>Meu Aniversário</title>
 <style>
-:root{--green:#167347;--dark:#105637;--pale:#eaf6ef;--white:#fff;--text:#183328;--muted:#678074}
-*{box-sizing:border-box}body{margin:0;background:#f3f8f5;color:var(--text);font-family:Arial,sans-serif}
-header{background:linear-gradient(135deg,var(--green),#22965e);color:white;padding:25px 18px 30px;border-radius:0 0 24px 24px}
-header h1{margin:0 0 6px;font-size:25px}header p{margin:0;opacity:.93}
-main{max-width:720px;margin:auto;padding:16px}
-.card{background:white;border-radius:17px;padding:17px;margin:0 0 15px;box-shadow:0 4px 16px #163b2410}
-h2{font-size:18px;margin:0 0 14px;color:var(--dark)}
-label{display:block;font-size:13px;font-weight:bold;margin:11px 0 5px;color:#355b47}
-input{width:100%;padding:12px;border:1px solid #cbded1;border-radius:10px;font-size:16px;background:#fbfefc}
-button{border:0;border-radius:11px;padding:12px 15px;font-size:15px;font-weight:bold;cursor:pointer}
-.primary{background:var(--green);color:white;width:100%;margin-top:15px}
-.secondary{background:var(--pale);color:var(--dark)}
-.danger{background:#fff0f0;color:#a22}
-.row{display:flex;gap:9px;align-items:center;flex-wrap:wrap}
-.person{border:1px solid #e1eee5;border-radius:13px;padding:13px;margin:10px 0}
-.person strong{font-size:16px}.sub{font-size:13px;color:var(--muted);margin-top:4px}
-.actions{display:flex;gap:8px;margin-top:10px;flex-wrap:wrap}
-.actions button{font-size:13px;padding:9px 11px}
-.badge{display:inline-block;background:var(--pale);color:var(--dark);padding:5px 8px;border-radius:20px;font-size:12px;font-weight:bold}
-.empty{color:var(--muted);font-size:14px;text-align:center;padding:18px}
-#notice{display:none;background:#fff8df;border:1px solid #f1dfa0;padding:12px;border-radius:12px;margin-bottom:14px}
-footer{text-align:center;color:var(--muted);font-size:12px;padding:8px 15px 25px}
+:root{--verde:#167347;--escuro:#105637;--claro:#eaf6ef}
+*{box-sizing:border-box}
+body{margin:0;background:#f2f8f4;color:#183328;font-family:Arial,sans-serif}
+header{background:linear-gradient(130deg,#167347,#23945f);color:white;padding:24px 16px;border-radius:0 0 22px 22px}
+header h1{margin:0 0 8px}
+main{max-width:700px;margin:auto;padding:17px}
+section{background:white;padding:18px;border-radius:16px;margin-bottom:16px;box-shadow:0 3px 15px #163b2412}
+h2{margin-top:0;color:var(--escuro);font-size:20px}
+label{display:block;font-weight:bold;font-size:14px;margin:12px 0 5px}
+input{display:block;width:100%;font-size:16px;padding:12px;border:1px solid #bbd6c5;border-radius:9px;color:#183328!important;background:#fff!important;-webkit-text-fill-color:#183328!important;caret-color:#183328}
+input:focus{outline:2px solid #167347}
+button{display:inline-block;padding:12px 15px;border:0;border-radius:10px;font-size:15px;font-weight:bold;cursor:pointer;margin-top:12px;background:var(--verde);color:#fff}
+button:disabled{opacity:.65}
+.secondary{background:var(--claro);color:var(--escuro)}
+.full{width:100%}
+.hidden{display:none}
+.help{font-size:13px;color:#506e5c;line-height:1.5}
+.person{border:1px solid #dce9df;padding:13px;border-radius:11px;margin-top:10px}
+.person p{margin:5px 0}
+#notice{display:none;padding:12px;border:1px solid #e2d49b;background:#fff8de;border-radius:10px;margin:15px 0;white-space:pre-wrap}
+footer{text-align:center;padding:12px 15px 25px;color:#65776b;font-size:12px}
 </style>
 </head>
 <body>
-<header>
-  <h1>🎂 Aniversariantes</h1>
-  <p>Feliz Aniversário — lembre-se de celebrar cada vida!</p>
-</header>
+<header><h1>🎂 Meu Aniversário</h1><p>Vamos celebrar cada vida!</p></header>
 <main>
-  <div id="notice"></div>
-  <section class="card">
-    <h2>➕ Cadastrar pessoa</h2>
-    <form id="birthdayForm">
-      <label for="name">Nome</label>
-      <input id="name" required maxlength="70" placeholder="Nome da pessoa">
-      <label for="birth">Data de nascimento</label>
-      <input id="birth" type="date" required>
-      <label for="phone">WhatsApp com DDD (opcional)</label>
-      <input id="phone" type="tel" placeholder="Ex.: 5592999999999">
-      <div class="row">
-        <button class="primary" id="saveBtn" type="submit" style="flex:1">Salvar aniversariante</button>
-        <button class="secondary" id="cancelEdit" type="button" style="display:none;margin-top:15px">Cancelar edição</button>
-      </div>
-      <p id="editHint" style="display:none;color:#167347;font-size:13px;margin:10px 0 0">Editando cadastro: altere o dia, mês ou ano e salve.</p>
-    </form>
-  </section>
-
-  <section class="card">
-    <h2>📅 Próximos aniversários</h2>
-    <div class="row">
-      <input id="search" aria-label="Buscar pessoa" placeholder="Buscar pelo nome..." style="flex:1;min-width:180px">
-      <button class="secondary" id="notifyBtn" type="button">Ativar avisos</button>
-    </div>
-    <div id="people"></div>
-  </section>
-  <section class="card">
-    <h2>💚 Como funciona</h2>
-    <p style="font-size:14px;line-height:1.5;margin:0">Cadastre o nome e a data de nascimento. Ao abrir o aplicativo no dia do aniversário, você verá um lembrete e poderá tocar em <b>Enviar pelo WhatsApp</b>. O texto será preparado para você revisar e enviar.</p>
-  </section>
+<div id="notice" role="status"></div>
+<section>
+<h2>➕ Cadastrar aniversariante</h2>
+<form id="cadastro">
+<label for="nome">Nome</label><input id="nome" required maxlength="70" autocomplete="name">
+<label for="nascimento">Data de nascimento</label><input id="nascimento" type="date" required>
+<label for="telefone">WhatsApp com DDD (opcional)</label><input id="telefone" type="tel" maxlength="20" placeholder="Ex.: 5592999999999">
+<button class="full" id="salvar" type="submit">Salvar aniversariante</button>
+</form>
+<p class="help">O cadastro será enviado ao banco de dados. Informe apenas dados que a pessoa autorizou compartilhar.</p>
+</section>
+<section>
+<h2>🔐 Painel do administrador</h2>
+<button id="abrir" class="full" type="button">👥 Ver aniversariantes cadastrados</button>
+<div id="painel" class="hidden">
+<form id="login">
+<label for="email">E-mail do administrador</label>
+<input id="email" type="email" autocomplete="username" required>
+<label for="senha">Senha</label>
+<input id="senha" type="password" autocomplete="current-password" required>
+<p class="help">A senha aparecerá como bolinhas para sua segurança.</p>
+<button class="full" type="submit">Entrar como administrador</button>
+</form>
+<div id="areaAdmin" class="hidden">
+<p class="help">Você está conectado como administrador.</p>
+<button class="secondary" type="button" id="atualizar">Atualizar cadastros</button>
+<button class="secondary" type="button" id="sair">Sair</button>
+<label for="buscar">Buscar pelo nome</label>
+<input id="buscar" placeholder="Digite o nome">
+<div id="lista"></div>
+</div>
+</div>
+</section>
+<section><h2>💚 Como funciona</h2><p>Compartilhe o link do aplicativo. Cada pessoa faz seu cadastro; somente o administrador autorizado poderá ver a lista de todos os aniversariantes. A mensagem do WhatsApp é preparada para revisão e envio manual.</p></section>
 </main>
-<footer>Seus cadastros ficam salvos neste aparelho e neste navegador.</footer>
+<footer>Meu Aniversário • Verde e branco</footer>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 <script>
-const KEY='aniversariantes_v1';
+(function(){
+"use strict";
 const $=id=>document.getElementById(id);
-let people=JSON.parse(localStorage.getItem(KEY)||'[]');
-const today=new Date();
-const dayKey=d=>${d.getMonth()+1}-${d.getDate()};
-function parseD
+const URL_SUPABASE="https://rbwldinvydebclomlaqw.supabase.co";
+const CHAVE_PUBLICA="sb_publishable_W0kMLGrX4OdV9-04A9ahfQ_ALr2xp4O";
+let cliente,registros=[];
+function aviso(msg){$("notice").textContent=msg;$("notice").style.display="block"}
+function limpaAviso(){$("notice").style.display="none"}
+function formatar(data){if(!/^\d{4}-\d{2}-\d{2}$/.test(data||""))return "Data indisponível";const partes=data.split("-");return partes[2]+"/"+partes[1]+"/"+partes[0]}
+function diasAte(data){const p=(data||"").split("-").map(Number);if(p.length!==3)return 999;const hoje=new Date();hoje.setHours(0,0,0,0);let futuro=new Date(hoje.getFullYear(),p[1]-1,p[2]);if(futuro<hoje)futuro=new Date(hoje.getFullYear()+1,p[1]-1,p[2]);return Math.round((futuro-hoje)/86400000)}
+function desenhar(){const busca=$("buscar").value.toLocaleLowerCase("pt-BR").trim();const lista=$("lista");lista.replaceChildren();const dados=registros.filter(p=>(p.name||"").toLocaleLowerCase("pt-BR").includes(busca)).sort((a,b)=>diasAte(a.birth_date)-diasAte(b.birth_date));if(!dados.length){const p=document.createElement("p");p.className="help";p.textContent="Nenhum aniversariante encontrado.";lista.append(p);return}dados.forEach(p=>{const bloco=document.createElement("div");bloco.className="person";const nome=document.createElement("strong");nome.textContent=p.name;const data=document.createElement("p");const dias=diasAte(p.birth_date);data.textContent="Nascimento: "+formatar(p.birth_date)+" • "+(dias===0?"Aniversário hoje!":"Faltam "+dias+" dia(s)");bloco.append(nome,data);const telefone=(p.phone||"").replace(/\D/g,"");if(telefone){const botao=document.createElement("button");botao.type="button";botao.className="secondary";botao.textContent="Enviar pelo WhatsApp";botao.addEventListener("click",()=>{const texto="Feliz aniversário, "+p.name+"! Que Deus abençoe sua vida com muita paz, saúde e alegria! 🎂";window.open("https://wa.me/"+telefone+"?text="+encodeURIComponent(texto),"_blank","noopener,noreferrer")});bloco.append(botao)}lista.append(bloco)})}
+async function eAdmin(){const resposta=await cliente.auth.getUser();const usuario=resposta.data&&resposta.data.user;if(!usuario)return false;const q=await cliente.from("administradores").select("user_id").eq("user_id",usuario.id).maybeSingle();if(q.error)throw q.error;return !!q.data}
+async function carregar(){limpaAviso();const r=await cliente.from("aniversariantes").select("id,name,birth_date,phone").order("name");if(r.error){aviso("Não foi possível consultar os cadastros: "+r.error.message);return}registros=r.data||[];desenhar()}
+async function atualizarAcesso(){let autorizado=false;try{autorizado=await eAdmin()}catch(erro){aviso("Erro ao verificar acesso: "+erro.message)}$("login").classList.toggle("hidden",autorizado);$("areaAdmin").classList.toggle("hidden",!autorizado);if(autorizado)await carregar();else{$("lista").replaceChildren();registros=[]}}
+if(!window.supabase){aviso("Não foi possível carregar o serviço Supabase. Verifique a conexão com a internet.");return}
+cliente=window.supabase.createClient(URL_SUPABASE,CHAVE_PUBLICA);
+$("abrir").addEventListener("click",async()=>{$("painel").classList.toggle("hidden");if(!$("painel").classList.contains("hidden"))await atualizarAcesso()});
+$("cadastro").addEventListener("submit",async e=>{e.preventDefault();limpaAviso();$("salvar").disabled=true;try{const nome=$("nome").value.trim();const nascimento=$("nascimento").value;const telefone=$("telefone").value.replace(/\D/g,"");if(nome.length<2)throw Error("Informe o nome.");if(telefone&&(telefone.length<10||telefone.length>15))throw Error("Confira o WhatsApp com DDD.");const r=await cliente.from("aniversariantes").insert({name:nome,birth_date:nascimento,phone:telefone||null});if(r.error)throw r.error;$("cadastro").reset();aviso("Cadastro enviado com sucesso! 🎉");if(await eAdmin())await carregar()}catch(erro){aviso("Não foi possível salvar. Confira a configuração do Supabase. "+erro.message)}finally{$("salvar").disabled=false}});
+$("login").addEventListener("submit",async e=>{e.preventDefault();limpaAviso();const r=await cliente.auth.signInWithPassword({email:$("email").value.trim(),password:$("senha").value});if(r.error){aviso("Não foi possível entrar: "+r.error.message);return}try{if(!await eAdmin()){await cliente.auth.signOut();aviso("Este e-mail ainda não está autorizado como administrador no Supabase.");return}await atualizarAcesso()}catch(erro){aviso("Falha na autorização: "+erro.message)}});
+$("sair").addEventListener("click",async()=>{await cliente.auth.signOut();await atualizarAcesso();aviso("Você saiu da área de administrador.")});
+$("atualizar").addEventListener("click",carregar);
+$("buscar").addEventListener("input",desenhar);
+})();
+</script>
+</body>
+</html>
