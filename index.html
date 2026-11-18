@@ -114,7 +114,10 @@ $("areaAdmin").classList.add("hidden");
 cliente.auth.onAuthStateChange((evento)=>{
 if(evento==="PASSWORD_RECOVERY")mostrarNovaSenha();
 });
-if(new URLSearchParams(window.location.hash.slice(1)).get("type")==="recovery")mostrarNovaSenha();
+const parametros=new URLSearchParams(window.location.search);
+const hashParams=new URLSearchParams(window.location.hash.slice(1));
+if(parametros.get("recuperar")==="1"||hashParams.get("type")==="recovery")mostrarNovaSenha();
+if(hashParams.get("error_description"))aviso("O link de recuperação não pôde ser usado. Solicite um novo link: "+hashParams.get("error_description"));
 $("esqueci").addEventListener("click",()=>{
 $("solicitarRecuperacao").classList.toggle("hidden");
 $("emailRecuperacao").value=$("email").value;
@@ -123,7 +126,7 @@ $("solicitarRecuperacao").addEventListener("submit",async e=>{
 e.preventDefault();limpaAviso();
 const botao=e.currentTarget.querySelector("button");botao.disabled=true;
 try{
-const redirectTo=window.location.origin+window.location.pathname;
+const redirectTo=window.location.origin+window.location.pathname+"?recuperar=1";
 const r=await cliente.auth.resetPasswordForEmail($("emailRecuperacao").value.trim(),{redirectTo});
 if(r.error)throw r.error;
 aviso("Se este e-mail estiver cadastrado, você receberá um link para criar sua nova senha. Verifique também a pasta de spam.");
@@ -136,6 +139,8 @@ const senha=$("novaSenha").value;
 if(senha!==$("confirmarSenha").value){aviso("As duas senhas precisam ser iguais.");return}
 const botao=e.currentTarget.querySelector("button");botao.disabled=true;
 try{
+const {data:sessao, error:erroSessao}=await cliente.auth.getSession();
+if(erroSessao||!sessao.session)throw Error("O link de recuperação não criou uma sessão válida. Solicite outro e abra o novo link no mesmo navegador.");
 const r=await cliente.auth.updateUser({password:senha});
 if(r.error)throw r.error;
 recuperando=false;
