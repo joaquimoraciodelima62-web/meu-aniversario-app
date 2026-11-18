@@ -55,6 +55,21 @@ footer{text-align:center;padding:12px 15px 25px;color:#65776b;font-size:12px}
 <p class="help">A senha aparecerá como bolinhas para sua segurança.</p>
 <button class="full" type="submit">Entrar como administrador</button>
 </form>
+<button class="secondary" type="button" id="esqueci">Esqueci minha senha de administrador</button>
+<form id="solicitarRecuperacao" class="hidden">
+<label for="emailRecuperacao">E-mail do administrador</label>
+<input id="emailRecuperacao" type="email" autocomplete="email" required>
+<button class="full" type="submit">Enviar link para recuperar senha</button>
+<p class="help">Verifique sua caixa de entrada e a pasta de spam.</p>
+</form>
+<form id="novaSenhaForm" class="hidden">
+<h2>🔑 Criar nova senha</h2>
+<label for="novaSenha">Nova senha (mínimo 8 caracteres)</label>
+<input id="novaSenha" type="password" autocomplete="new-password" minlength="8" required>
+<label for="confirmarSenha">Confirmar nova senha</label>
+<input id="confirmarSenha" type="password" autocomplete="new-password" minlength="8" required>
+<button class="full" type="submit">Salvar nova senha</button>
+</form>
 <div id="areaAdmin" class="hidden">
 <p class="help">Você está conectado como administrador.</p>
 <button class="secondary" type="button" id="atualizar">Atualizar cadastros</button>
@@ -86,7 +101,55 @@ async function carregar(){limpaAviso();const r=await cliente.from("aniversariant
 async function atualizarAcesso(){let autorizado=false;try{autorizado=await eAdmin()}catch(erro){aviso("Erro ao verificar acesso: "+erro.message)}$("login").classList.toggle("hidden",autorizado);$("areaAdmin").classList.toggle("hidden",!autorizado);if(autorizado)await carregar();else{$("lista").replaceChildren();registros=[]}}
 if(!window.supabase){aviso("Não foi possível carregar o serviço Supabase. Verifique a conexão com a internet.");return}
 cliente=window.supabase.createClient(URL_SUPABASE,CHAVE_PUBLICA);
-$("abrir").addEventListener("click",async()=>{$("painel").classList.toggle("hidden");if(!$("painel").classList.contains("hidden"))await atualizarAcesso()});
+let recuperando=false;
+function mostrarNovaSenha(){
+recuperando=true;
+$("painel").classList.remove("hidden");
+$("novaSenhaForm").classList.remove("hidden");
+$("login").classList.add("hidden");
+$("solicitarRecuperacao").classList.add("hidden");
+$("esqueci").classList.add("hidden");
+$("areaAdmin").classList.add("hidden");
+}
+cliente.auth.onAuthStateChange((evento)=>{
+if(evento==="PASSWORD_RECOVERY")mostrarNovaSenha();
+});
+if(new URLSearchParams(window.location.hash.slice(1)).get("type")==="recovery")mostrarNovaSenha();
+$("esqueci").addEventListener("click",()=>{
+$("solicitarRecuperacao").classList.toggle("hidden");
+$("emailRecuperacao").value=$("email").value;
+});
+$("solicitarRecuperacao").addEventListener("submit",async e=>{
+e.preventDefault();limpaAviso();
+const botao=e.currentTarget.querySelector("button");botao.disabled=true;
+try{
+const redirectTo=window.location.origin+window.location.pathname;
+const r=await cliente.auth.resetPasswordForEmail($("emailRecuperacao").value.trim(),{redirectTo});
+if(r.error)throw r.error;
+aviso("Se este e-mail estiver cadastrado, você receberá um link para criar sua nova senha. Verifique também a pasta de spam.");
+}catch(erro){aviso("Não foi possível solicitar o link: "+erro.message)}
+finally{botao.disabled=false}
+});
+$("novaSenhaForm").addEventListener("submit",async e=>{
+e.preventDefault();limpaAviso();
+const senha=$("novaSenha").value;
+if(senha!==$("confirmarSenha").value){aviso("As duas senhas precisam ser iguais.");return}
+const botao=e.currentTarget.querySelector("button");botao.disabled=true;
+try{
+const r=await cliente.auth.updateUser({password:senha});
+if(r.error)throw r.error;
+recuperando=false;
+$("novaSenhaForm").classList.add("hidden");
+$("esqueci").classList.remove("hidden");
+$("login").classList.remove("hidden");
+$("novaSenhaForm").reset();
+history.replaceState(null,"",window.location.pathname);
+aviso("Senha alterada com sucesso! Agora entre como administrador com a nova senha.");
+await cliente.auth.signOut();
+}catch(erro){aviso("Não foi possível salvar a nova senha: "+erro.message)}
+finally{botao.disabled=false}
+});
+$("abrir").addEventListener("click",async()=>{$("painel").classList.toggle("hidden");if(!$("painel").classList.contains("hidden")&&!recuperando)await atualizarAcesso()});
 $("cadastro").addEventListener("submit",async e=>{e.preventDefault();limpaAviso();$("salvar").disabled=true;try{const nome=$("nome").value.trim();const nascimento=$("nascimento").value;const telefone=$("telefone").value.replace(/\D/g,"");if(nome.length<2)throw Error("Informe o nome.");if(telefone&&(telefone.length<10||telefone.length>15))throw Error("Confira o WhatsApp com DDD.");const r=await cliente.from("aniversariantes").insert({name:nome,birth_date:nascimento,phone:telefone||null});if(r.error)throw r.error;$("cadastro").reset();aviso("Cadastro enviado com sucesso! 🎉");if(await eAdmin())await carregar()}catch(erro){aviso("Não foi possível salvar. Confira a configuração do Supabase. "+erro.message)}finally{$("salvar").disabled=false}});
 $("login").addEventListener("submit",async e=>{e.preventDefault();limpaAviso();const r=await cliente.auth.signInWithPassword({email:$("email").value.trim(),password:$("senha").value});if(r.error){aviso("Não foi possível entrar: "+r.error.message);return}try{if(!await eAdmin()){await cliente.auth.signOut();aviso("Este e-mail ainda não está autorizado como administrador no Supabase.");return}await atualizarAcesso()}catch(erro){aviso("Falha na autorização: "+erro.message)}});
 $("sair").addEventListener("click",async()=>{await cliente.auth.signOut();await atualizarAcesso();aviso("Você saiu da área de administrador.")});
